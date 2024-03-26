@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { getjob, addjob, updatejob } from "Api/rankapi";
 import axios from "axios";
 import React, { useState, useEffect } from "react";

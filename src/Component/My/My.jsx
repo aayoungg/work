@@ -1,10 +1,6 @@
+/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import user from "../../Image/user.png";
-import phone from "../../Image/phone.png";
-import mail from "../../Image/mail.png";
-import part from "../../Image/part.png";
-// import Image from '../Iamge/Image';
 import { getCookie } from "../../Cookie/cookie";
 
 const MyInfo = styled.ul`

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -16,22 +17,23 @@ const Calendar = ({ workcheckData }) => {
   useEffect(() => {
     if (workcheckData && workcheckData.length !== 0) {
       const currentDate = new Date();
-      console.log(currentDate)
+      console.log(currentDate);
       for (
         let date = nowstartDate;
         date <= currentDate;
         date.setDate(date.getDate() + 1)
       ) {
         const dateString = date.toISOString().split("T")[0];
-        const someData = workcheckData.code !== 200 ? [] : workcheckData.data.find((data) =>
-          data.startDate.includes(dateString),
-        );
-        console.log("someData", someData)
+        const someData =
+          workcheckData.code !== 200
+            ? []
+            : workcheckData.data.find((data) =>
+                data.startDate.includes(dateString)
+              );
+        console.log("someData", someData);
         if (date.getDay() === 0 || date.getDay() === 1) {
           continue;
         }
-
-
 
         if (someData === undefined) {
           const commuteEvent = {

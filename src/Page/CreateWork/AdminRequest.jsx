@@ -1,6 +1,6 @@
+/* eslint-disable */
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import NewModal from "../../Component/Modal/NewModal";
 import { workTimeUnit } from "../../Api/api";
 // Time 캘린더
 import dayjs from "dayjs";

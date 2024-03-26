@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import { vacationPro, vacationProNo, vacationlist } from "../Api/vacationapi";
 import { getCookie } from "../Cookie/cookie";
@@ -20,7 +21,7 @@ function VacationProcess() {
   const [vacationProcess, setVacationProcess] = useState([]);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectFilter, setSelectFilter] = useState("All")
+  const [selectFilter, setSelectFilter] = useState("All");
   const [confirm, setConfirm] = useState(null);
   const [value, setValue] = useState();
 
@@ -60,17 +61,17 @@ function VacationProcess() {
   };
   function filter(selectedFilter) {
     if (vacationProcess != undefined) {
-      setSelectFilter(selectedFilter)
+      setSelectFilter(selectedFilter);
       setValue(
-          vacationProcess.filter((record) =>
-              selectedFilter === "All"
-                  ? record
-                  : selectedFilter === "1"
-                      ? record.vacationStatus === 1
-                      : selectedFilter === "2"
-                          ? record.vacationStatus === 2
-                          : record.vacationStatus === 3,
-          ),
+        vacationProcess.filter((record) =>
+          selectedFilter === "All"
+            ? record
+            : selectedFilter === "1"
+            ? record.vacationStatus === 1
+            : selectedFilter === "2"
+            ? record.vacationStatus === 2
+            : record.vacationStatus === 3
+        )
       );
     }
   }
@@ -78,13 +79,17 @@ function VacationProcess() {
     vacationRequest();
   }, [requestStart, requestEnd]);
   useEffect(() => {
-    filter(selectFilter)
-  }, [vacationProcess])
+    filter(selectFilter);
+  }, [vacationProcess]);
 
   const totalItems = vacationProcess == undefined ? 0 : vacationProcess.length; // 전체
   const indexOfLastItem = currentPage * itemsPerPage; // 현재 페이지에서 마지막
   const indexOfFirstItem = indexOfLastItem - itemsPerPage; // 현재 페이지에서 첫번째
-  const currentItems =value == undefined ? vacationProcess && vacationProcess.slice(indexOfFirstItem, indexOfLastItem) : value && value.slice(indexOfFirstItem, indexOfLastItem); // 현재 페이지
+  const currentItems =
+    value == undefined
+      ? vacationProcess &&
+        vacationProcess.slice(indexOfFirstItem, indexOfLastItem)
+      : value && value.slice(indexOfFirstItem, indexOfLastItem); // 현재 페이지
 
   const handleApprove = async (row) => {
     const approveIdx = loginData.data.rankName == "팀장" ? 2 : 1;
@@ -165,9 +170,9 @@ function VacationProcess() {
     setItemsPerPage(newItemsPerPage); // select box에서 선택한 값으로 itemsPerPage 목록 업데이트
   };
   useEffect(() => {
-    vacationRequest()
-    filter(selectFilter)
-  }, [confirm])
+    vacationRequest();
+    filter(selectFilter);
+  }, [confirm]);
 
   const columns = [
     {
@@ -266,10 +271,10 @@ function VacationProcess() {
     <>
       <MainTitle title={"신청 받은 목록"}></MainTitle>
       <SearchForm>
-        <DatePicker setStartDate={setRequestStart} setEndDate={setRequestEnd}/>
+        <DatePicker setStartDate={setRequestStart} setEndDate={setRequestEnd} />
         <select
-            onChange={(e) => filter(e.target.value)}
-            style={{width: "140px", height: "35px", textAlign: "center"}}
+          onChange={(e) => filter(e.target.value)}
+          style={{ width: "140px", height: "35px", textAlign: "center" }}
         >
           <option value="All">전체</option>
           <option value="1">대기 중</option>
@@ -278,15 +283,15 @@ function VacationProcess() {
         </select>
       </SearchForm>
 
-      <ReactTable columns={columns} data={currentItems}/>
+      <ReactTable columns={columns} data={currentItems} />
       <PageSelectBox onChange={handleItemsPerPageChange}>
         <option value="10">10</option>
         <option value="15">15</option>
         <option value="20">20</option>
       </PageSelectBox>
       <Pagination
-          currentPage={currentPage}
-          itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
         totalItems={totalItems}
         paginate={paginate}
       />

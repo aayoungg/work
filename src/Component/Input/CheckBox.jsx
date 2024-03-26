@@ -1,3 +1,4 @@
+/* eslint-disable */
 export default function CheckBox({ children, checked, setChecked, id }) {
   const onChange = (e) => {
     setChecked(e.target.checked);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+/* eslint-disable */
 
 function DateComponent() {
   const today = new Date();

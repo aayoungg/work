@@ -1,0 +1,27 @@
+.modal {
+  position: relative;
+}
+
+.modal_background {
+  position: absolute;
+  top: -25vh;
+  left: 28.5vw;
+  z-index: 2;
+  background-color: #ffffff;
+  width: 50vw;
+  height: 85vh;
+  border: 1px solid black;
+}
+
+.button {
+  width: 42vw;
+}
+
+.buttonmain {
+  display: flex;
+  justify-content: center;
+}
+
+#map {
+  margin: 0 auto;
+}

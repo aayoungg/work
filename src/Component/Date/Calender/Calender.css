@@ -1,0 +1,27 @@
+/* Calender.css */
+
+.fc-scrollgrid-sync-table {
+  width: 100% !important;
+  height: 590px !important;
+}
+
+.fc-col-header {
+  width: 100% !important;
+}
+
+.fc .fc-scrollgrid-liquid {
+  height: 620px !important;
+}
+
+.fc-view-harness {
+  height: 0px !important;
+}
+/* 일요일 날짜: 빨간색 */
+.fc-day-sun a {
+  color: red;
+}
+
+/* 토요일 날짜: 파란색 */
+.fc-day-sat a {
+  color: blue;
+}

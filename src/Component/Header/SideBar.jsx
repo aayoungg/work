@@ -6,6 +6,7 @@ import homeIcon from "assets/icon/system/home-line.svg";
 import employeeIcon from "assets/icon/system/employee-line.svg";
 import calendarIcon from "assets/icon/social/calendar.svg";
 import userIcon from "assets/icon/social/user.svg";
+import vacationIcon from "assets/icon/social/vacation-line.svg";
 import { getCookie } from "Cookie/cookie";
 import {
   adminMenu,
@@ -89,6 +90,10 @@ const SideMenu = styled.ul`
     &.employee {
       mask-image: url(${employeeIcon});
     }
+
+    &.vacation {
+      mask-image: url(${vacationIcon});
+    }
   }
 
   .down-icon {
@@ -120,7 +125,7 @@ const SideMenu = styled.ul`
   }
 `;
 
-export default function SideBar({ }) {
+export default function SideBar({}) {
   const location = useLocation();
   const user = getCookie("logindata");
 
@@ -132,8 +137,8 @@ export default function SideBar({ }) {
     user.data.rankName === "관리자"
       ? adminMenu
       : user.data.rankName === "팀장"
-        ? teamLeaderMenu
-        : TeamMemberMenu;
+      ? teamLeaderMenu
+      : TeamMemberMenu;
 
   return (
     <>
@@ -150,8 +155,9 @@ export default function SideBar({ }) {
                 ) : (
                   <div className={`sub`}>
                     <p
-                      className={`menu ${isSubActive(item.subMenu) ? "on" : ""
-                        }`}
+                      className={`menu ${
+                        isSubActive(item.subMenu) ? "on" : ""
+                      }`}
                     >
                       <span className={`icon ${item.icon}`}></span>
                       {item.title}

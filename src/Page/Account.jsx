@@ -49,6 +49,11 @@ const List = styled.ul`
     p {
       width: 100px;
       flex: 0 0 100px;
+
+      // &::after {
+      //   content: "*";
+      //   color: #ff7b02;
+      // }
     }
     textarea {
       width: 201px;
@@ -278,7 +283,7 @@ const Account = () => {
   };
 
   const handleCheck = (idx) => {
-    // 계정 체크 상태 업데이트
+    // 계정 체크 상태
     setCheckedAccounts({ ...checkedAccounts, [idx]: !checkedAccounts[idx] });
   };
 
@@ -541,7 +546,8 @@ const Account = () => {
               </li>
               <li>
                 <p>부서</p>
-                <ModalSelect
+                <select
+                  class="bo_w_select"
                   onChange={(e) => {
                     console.log(e.target.value);
                     setPartIdx(e.target.value);
@@ -554,11 +560,12 @@ const Account = () => {
                       {data.partname}
                     </option>
                   ))}
-                </ModalSelect>
+                </select>
               </li>
               <li>
                 <p>직책</p>
-                <ModalSelect
+                <select
+                  class="bo_w_select"
                   onChange={(e) => setRankIdx(e.target.value)}
                   value={rankidx}
                 >
@@ -568,11 +575,12 @@ const Account = () => {
                       {data.rankname}
                     </option>
                   ))}
-                </ModalSelect>
+                </select>
               </li>
               <li>
                 <p>직급</p>
-                <ModalSelect
+                <select
+                  class="bo_w_select"
                   onChange={(e) => setJobTitleIdx(e.target.value)}
                   value={jobTitleIdx}
                 >
@@ -582,7 +590,7 @@ const Account = () => {
                       {data.jobtitle}
                     </option>
                   ))}
-                </ModalSelect>
+                </select>
               </li>
               <li>
                 <p>메모</p>
@@ -600,6 +608,15 @@ const Account = () => {
                 type="button"
                 $full
                 $size="l"
+                disabled={
+                  !id ||
+                  !password ||
+                  !name ||
+                  !firstDay ||
+                  !partidx ||
+                  !rankidx ||
+                  !jobTitleIdx
+                }
                 onClick={isEditing ? handleUpdateAccount : handleSaveAccount}
               >
                 {isEditing ? "수정" : "생성"}

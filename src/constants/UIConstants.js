@@ -4,7 +4,7 @@ export const adminMenu = [
     icon: "schedule",
     subMenu: [
       {
-        title: "출퇴근 목록",
+        title: "직원 업무시간 목록",
         link: "/work/CommuteHistory",
       },
       {
@@ -12,7 +12,7 @@ export const adminMenu = [
         link: "/work/RequestCheck",
       },
       {
-        title: "직원 업무시간 목록",
+        title: "근무 일정",
         link: "/work/AdminRequest",
       },
     ],
@@ -20,7 +20,7 @@ export const adminMenu = [
   {
     title: "휴가 관리",
     link: null,
-    icon: "schedule",
+    icon: "vacation",
     subMenu: [
       {
         title: "신청 받은 목록",
@@ -91,7 +91,7 @@ export const teamLeaderMenu = [
   {
     title: "휴가 관리",
     link: null,
-    icon: "schedule",
+    icon: "vacation",
     subMenu: [
       {
         title: "휴가 신청",
@@ -135,7 +135,7 @@ export const TeamMemberMenu = [
   {
     title: "휴가 관리",
     link: null,
-    icon: "schedule",
+    icon: "vacation",
     subMenu: [
       {
         title: "휴가 신청",

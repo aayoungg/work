@@ -13,7 +13,6 @@ import Pagination from "../../Component/Pagination/Pagination";
 import CommonBtn from "../../Component/Button/CommonBtn";
 import CreateAttendanceModal from "../../Component/Modal/CreateAttendanceModal";
 import { WORK_REQUEST_TYPE } from "../../constants/serviceConstants";
-import CheckBox from "../../Component/Input/CheckBox";
 import PageSelectBox from "Component/SelectBox/PageSelectBox";
 
 function CommuteHistory() {
@@ -90,7 +89,7 @@ function CommuteHistory() {
     {
       accessor: "name",
       Header: "이름",
-      headerWidth: "150px",
+      headerWidth: "170px",
       textCenter: true,
     },
     {
@@ -98,7 +97,7 @@ function CommuteHistory() {
       Header: "날짜",
       Cell: ({ row }) =>
         printDateTimeFormat(row.original.startDate, "YYYY-MM-dd"),
-      headerWidth: "180px",
+      headerWidth: "150px",
       textCenter: true,
     },
     {
@@ -106,11 +105,12 @@ function CommuteHistory() {
       Header: "출근시간",
       Cell: ({ row }) => printDateTimeFormat(row.original.startDate, "HH:mm"),
       textCenter: true,
-      headerWidth: "300px",
+      headerWidth: "150px",
     },
     {
       accessor: "endDate",
       Header: "퇴근시간",
+      headerWidth: "150px",
       Cell: ({ row }) =>
         row.original.endDate
           ? printDateTimeFormat(row.original.endDate, "HH:mm")
@@ -120,6 +120,7 @@ function CommuteHistory() {
     {
       accessor: "termDate",
       Header: "근로시간",
+      headerWidth: "150px",
       Cell: ({ row }) => {
         const startDate = new Date(row.original.startDate);
         const endDate = new Date(row.original.endDate);
@@ -154,13 +155,13 @@ function CommuteHistory() {
             );
           },
           textCenter: true,
-          headerWidth: "100px",
+          headerWidth: "150px",
         }
       : {
           accessor: "edit",
           Header: "",
           textCenter: true,
-          headerWidth: "100px",
+          headerWidth: "0px",
         },
   ];
 
@@ -183,16 +184,18 @@ function CommuteHistory() {
   return (
     <>
       {/*메인 타이틀*/}
-      <MainTitle title={"출퇴근 목록"}>
-        {LoginData.data.rankName !== "관리자" && (
+      {LoginData.data.rankName !== "관리자" ? (
+        <MainTitle title={"출퇴근 목록"}>
           <CommonBtn
             $size="m"
             onClick={() => AttendanceModalOpen(WORK_REQUEST_TYPE.CREATE)}
           >
             출퇴근 요청
           </CommonBtn>
-        )}
-      </MainTitle>
+        </MainTitle>
+      ) : (
+        <MainTitle title={"직원 업무시간 목록"}></MainTitle>
+      )}
 
       {/*필터, 소팅*/}
       <SearchForm>

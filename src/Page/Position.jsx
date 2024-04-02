@@ -10,7 +10,6 @@ import PageSelectBox from "Component/SelectBox/PageSelectBox";
 import SelectBox from "Component/SelectBox/SelectBox";
 import CommonBtn from "Component/Button/CommonBtn";
 import MainTitle from "Component/Header/MainTitle";
-import ModalSelect from "Component/SelectBox/ModalSelectBox";
 import Swal from "sweetalert2";
 
 const Ul = styled.ul`
@@ -279,7 +278,8 @@ function Position() {
               {isEditing && (
                 <li>
                   <p>사용여부</p>
-                  <ModalSelect
+                  <select
+                    class="bo_w_select"
                     value={flag}
                     onChange={(e) => {
                       setRankFlag(e.target.value);
@@ -291,7 +291,7 @@ function Position() {
                     <option key={0} value={0}>
                       사용 안 함
                     </option>
-                  </ModalSelect>
+                  </select>
                 </li>
               )}
             </List>
@@ -301,14 +301,13 @@ function Position() {
                 $full
                 $size="l"
                 onClick={isEditing ? handleUpdateRank : handleSaveRank}
+                disabled={!name}
               >
                 {isEditing ? "수정" : "생성"}
               </CommonBtn>
             </div>
           </div>
         </Modal>
-        {/* </div>
-        ))} */}
       </Ul>
       <ReactTable columns={columns} data={currentItems} />
       <PageSelectBox onChange={handleItemsPerPageChange}>

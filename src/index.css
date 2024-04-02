@@ -211,6 +211,36 @@ input[type="checkbox"]:checked + label {
   }
 }
 
+.modal_restart {
+  width: 34px;
+  height: 34px;
+  background: center url("assets/icon/system/reset_alt.svg");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  margin: auto 10px auto 0;
+
+  &:hover {
+    background-color: var(--gray1);
+  }
+}
+
+.modal_restart::after {
+  content: "";
+  background: center url("assets/icon/system/reset_alt.svg");
+  background-size: 20px;
+  background-repeat: no-repeat;
+  display: block;
+  width: 24px;
+  height: 24px;
+  transition: 0.2s;
+}
+
+.modal_restart:hover::after {
+  transform: scale(1.1);
+}
+
 .ant-picker {
   border: 1px solid var(--gray4);
   border-radius: 3px;
@@ -233,4 +263,25 @@ input[type="checkbox"]:checked + label {
 }
 .htmlContainer {
   padding: 20px 22px 34px 22px;
+}
+
+/* select box 화살표 */
+.bo_w_select {
+  width: 100%;
+  height: 40px;
+  padding: 0 17px;
+  border: 1px solid var(--gray4);
+  border-radius: 3px;
+  background: url("assets/icon/system/arrow_down_18dp.png") no-repeat
+    calc(100% - 5px) 50%;
+  background-size: 30px; /* 화살표 사이즈 */
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  color: #000;
+  max-width: 340px;
+
+  &:focus {
+    outline: none;
+    border-color: #000;
+  }
 }

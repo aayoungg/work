@@ -17,7 +17,7 @@ const CalenderPosition = styled.div`
 `;
 
 const Card = styled.div`
-  width: 30%;
+  width: 100%;
   background: #fff;
   height: fit-content;
   padding: 28px;

@@ -34,14 +34,6 @@ const List = styled.ul`
   }
 `;
 
-function formatDate(date) {
-  if (date !== null) {
-    const formattedDate =
-      date.split("T")[1].split(":").slice(0, 2).join("시") + "분";
-    return formattedDate;
-  }
-}
-
 export default function CreateAttendanceModal({
   isModalOpen,
   setIsModalOpen,
@@ -63,7 +55,10 @@ export default function CreateAttendanceModal({
     endMinute: "",
     type: WORK_REQUEST_TYPE.EDIT,
   });
+
+  // 출퇴근 정보가 이미 존재하는 경우에는 수정 요청을 보낼 수 있도록 버튼을 활성화하고, 정보가 없는 경우에는 요청을 보낼 수 있도록 버튼을 비활성화
   const [isAlready, setIsAlready] = useState(false);
+
   const { type } = inputs;
 
   // time
@@ -118,6 +113,20 @@ export default function CreateAttendanceModal({
         console.error("Error during workcheck:", err);
       });
   };
+  function formatDate(date) {
+    // 날짜 객체 생성
+    var d = new Date(date);
+
+    // 원하는 형식으로 날짜 및 시간 값 추출
+    var year = d.getFullYear();
+    var month = ("0" + (d.getMonth() + 1)).slice(-2);
+    var day = ("0" + d.getDate()).slice(-2);
+    var hours = ("0" + d.getHours()).slice(-2);
+    var minutes = ("0" + d.getMinutes()).slice(-2);
+
+    // yyyyMMddHHmm 형식으로 조합하여 반환
+    return year + month + day + hours + minutes;
+  }
 
   const timeInjection = (start, end) => {
     setInputs({
@@ -134,14 +143,6 @@ export default function CreateAttendanceModal({
       toast("시간을 입력해주세요");
       return false;
     }
-
-    // const startTime = new Date(0, 0, 0, startHour, startMinute); // 시작 시간 생성
-    // const endTime = new Date(0, 0, 0, endHour, endMinute); // 종료 시간 생성
-
-    // if (startTime >= endTime) {
-    //   toast("시작 시간은 종료 시간보다 이전이어야 합니다.");
-    //   return false;
-    // }
 
     return true;
   };
@@ -161,38 +162,17 @@ export default function CreateAttendanceModal({
     return { formattedStartTime, formattedEndTime };
   };
 
-  const editWork = () => {
-    const valid = validForm();
-    if (!valid) return;
-
-    const { formattedStartTime, formattedEndTime } = FormattedTime();
-
-    new workRequest()
-      .post(
-        userIdx,
-        dayjs(formattedStartTime, "YYYYMMDDHHmm").toDate(),
-        dayjs(formattedEndTime, "YYYYMMDDHHmm").toDate(),
-        WORK_REQUEST_TYPE.EDIT,
-        workIdx
-      )
-      .then((res) => {
-        if (res.code === 200) {
-          setIsModalOpen(false);
-          navigate("/work/SendRequest");
-          toast("출퇴근 수정 요청을 보냈습니다.");
-        }
-      })
-      .catch((err) => {
-        toast("출퇴근 수정에 실패했습니다.");
-        console.error("Error during workRequest:", err);
-      });
-  };
-
+  // 출퇴근 시간을 생성하기 위해 요청보내는
   const createWork = () => {
     const valid = validForm();
     if (!valid) return;
 
     const { formattedStartTime, formattedEndTime } = FormattedTime();
+
+    if (isAlready) {
+      toast.error("이미 출퇴근 요청을 보냈습니다.");
+      return;
+    }
 
     new workRequest()
       .post(
@@ -204,12 +184,45 @@ export default function CreateAttendanceModal({
       )
       .then((res) => {
         if (res.code === 200) {
-          toast("출퇴근 요청을 보냈습니다.");
+          toast.success("출퇴근 요청을 보냈습니다.");
           navigate("/work/SendRequest");
         }
       })
       .catch((err) => {
-        toast("출퇴근 요청에 실패했습니다.");
+        toast.error("출퇴근 요청에 실패했습니다.");
+        console.error("Error during workRequest:", err);
+      });
+  };
+
+  // 출퇴근 시간 수정하는
+  const editWork = () => {
+    const valid = validForm();
+    if (!valid) return;
+
+    const { formattedStartTime, formattedEndTime } = FormattedTime();
+
+    if (isAlready) {
+      toast.error("이미 출퇴근 요청을 보냈습니다.");
+      return;
+    }
+
+    new workRequest()
+      .post(
+        userIdx,
+        formatDate(dayjs(formattedStartTime, "YYYYMMDDHHmm").toDate()),
+        formatDate(dayjs(formattedEndTime, "YYYYMMDDHHmm").toDate()),
+        WORK_REQUEST_TYPE.EDIT,
+        workIdx
+      )
+      .then((res) => {
+        if (res.code === 200) {
+          setIsModalOpen(false);
+          navigate("/work/SendRequest");
+          toast.success("출퇴근 수정 요청을 보냈습니다.");
+        }
+      })
+      .catch((err) => {
+        toast.error("출퇴근 수정에 실패했습니다.");
         console.error("Error during workRequest:", err);
       });
   };
@@ -221,6 +234,7 @@ export default function CreateAttendanceModal({
   };
 
   useEffect(() => {
+    console.log(responseData);
     setModalStartDate(
       responseData == undefined || responseData.code == 404
         ? null
@@ -229,7 +243,7 @@ export default function CreateAttendanceModal({
     setModalEndDate(
       responseData == undefined || responseData.code == 404
         ? null
-        : responseData.data[0].endDate.split("T")[1].slice(0, 5)
+        : responseData.data[0].endDate?.split("T")[1].slice(0, 5)
     );
   }, [responseData, startDate]);
 
@@ -245,7 +259,7 @@ export default function CreateAttendanceModal({
       <Modal isOpen={isModalOpen}>
         <div className="modal_header">
           <h2 className="modal_title">
-            출퇴근 {modalType === WORK_REQUEST_TYPE.EDIT ? "수정" : "생성"}
+            출퇴근 {modalType === WORK_REQUEST_TYPE.EDIT ? "수정" : "요청"}
           </h2>
           <button className="modal_close" onClick={closeModal}></button>
         </div>
@@ -275,18 +289,14 @@ export default function CreateAttendanceModal({
                         .slice(0, 2)
                         .join(":")
                 }
-                // value={attendanceTime && attendanceTime.startDate ? dayjs(attendanceTime.startDate) : null}
-                onChange={(value) => {
-                  onChange(value, "start");
-                  setModalStartDate(value);
-                }}
-                // defaultOpenValue={dayjs("00:00", format)}
                 value={
                   modalStartDate == null ? null : dayjs(modalStartDate, format)
                 }
+                onCalendarChange={(value) => {
+                  onChange(value, "start");
+                  setModalStartDate(value);
+                }}
                 format={format}
-                changeOnScroll
-                needConfirm={false}
               />
             </li>
             <li>
@@ -306,29 +316,20 @@ export default function CreateAttendanceModal({
                         .slice(0, 2)
                         .join(":")
                 }
-                // value={attendanceTime && attendanceTime.endDate ? dayjs(attendanceTime.endDate) : null}
-                onChange={(value) => {
-                  onChange(value, "end");
-                  setModalEndDate(value);
-                }}
-                // defaultOpenValue={dayjs("00:00", format)}
                 value={
                   modalEndDate == null ? null : dayjs(modalEndDate, format)
                 }
                 format={format}
-                changeOnScroll
-                needConfirm={false}
+                onCalendarChange={(value) => {
+                  onChange(value, "end");
+                  setModalEndDate(value);
+                }}
               />
             </li>
           </List>
           <div className={"modal_btn"}>
             {modalType === WORK_REQUEST_TYPE.CREATE ? (
-              <CommonBtn
-                $full
-                $size="l"
-                disabled={isAlready}
-                onClick={createWork}
-              >
+              <CommonBtn $full $size="l" onClick={createWork}>
                 요청하기
               </CommonBtn>
             ) : modalType === WORK_REQUEST_TYPE.EDIT ? (

@@ -178,13 +178,13 @@ function VacationProcess() {
     {
       accessor: "name",
       Header: "이름",
-      headerWidth: "100px",
+      headerWidth: "150px",
       textCenter: true,
     },
     {
       accessor: "RequestDate",
       Header: "신청 날짜",
-      headerWidth: "150px",
+      headerWidth: "120px",
       textCenter: true,
       Cell: ({ row }) => {
         return `${row.original.requestDate}`;
@@ -202,7 +202,7 @@ function VacationProcess() {
     {
       accessor: "vacationType",
       Header: "휴가 종류",
-      headerWidth: "150px",
+      headerWidth: "120px",
       textCenter: true,
       Cell: ({ row }) => {
         return `${
@@ -237,7 +237,7 @@ function VacationProcess() {
     },
     {
       accessor: "button",
-      Header: "",
+      Header: "타입",
       headerWidth: "150px",
       textCenter: true,
       Cell: ({ row }) => {

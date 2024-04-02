@@ -49,6 +49,7 @@ function SendRequest() {
         .get(userIdx, startDate, endDate, type)
         .then((workRequest) => {
           if (workRequest.code === 200) {
+            console.log(workRequest.data);
             setDateRecord(workRequest.data);
           } else {
             setDateRecord([]);
@@ -64,11 +65,11 @@ function SendRequest() {
       setSelectFilter(selectedFilter);
       setValue(
         dateRecord.filter((record) =>
-          selectFilter === "All"
+          selectedFilter === "All"
             ? record
-            : selectFilter === "0"
+            : selectedFilter === "null"
             ? record.confirm === null
-            : selectFilter === "1"
+            : selectedFilter === "1"
             ? record.confirm === 1
             : record.confirm === 0
         )
@@ -114,30 +115,32 @@ function SendRequest() {
     //삭제
     setCheckBoxIdx({ ...checkBoxIdx, [idx]: !checkBoxIdx[idx] });
   };
-
+  const isDeleteButtonDisabled = Object.values(checkBoxIdx).every(
+    (record) => !record
+  );
   const dataDelete = async () => {
     const toDelete = Object.keys(checkBoxIdx).filter((idx) => checkBoxIdx[idx]);
 
-    if (window.confirm("정말 취소 하시겠습니까?") == true) {
+    if (window.confirm("정말 삭제 하시겠습니까?")) {
       try {
         let allRequestsSuccessful = true;
 
         for (let i = 0; i < toDelete.length; i++) {
           let idx = toDelete[i];
-          new workRequest().delete(idx).then((deletedata) => {
+          await new workRequest().delete(idx).then((deletedata) => {
             if (deletedata.data.code !== 200) {
               allRequestsSuccessful = false;
             }
           });
         }
         if (allRequestsSuccessful) {
-          toast("취소 되었습니다.");
+          toast("삭제 되었습니다.");
           WorkRequest();
+          setCheckBoxIdx({});
         } else {
           alert("에러");
         }
       } catch (error) {
-        // 에러 처리
         console.error(error);
       }
     }
@@ -162,7 +165,7 @@ function SendRequest() {
   const columns = [
     {
       accessor: "delete",
-      Header: "요청 취소",
+      Header: "취소",
       Cell: ({ row }) => {
         let record = row.original;
         return (
@@ -188,11 +191,11 @@ function SendRequest() {
       textCenter: true,
     },
     {
-      accessor: "date",
+      accessor: "requestDate",
       Header: "신청 날짜",
       Cell: ({ row }) =>
         printDateTimeFormat(row.original.requestDate, "YYYY-MM-dd"),
-      headerWidth: "200px",
+      headerWidth: "260px",
       textCenter: true,
     },
     {
@@ -208,24 +211,25 @@ function SendRequest() {
       Header: "출근시간",
       Cell: ({ row }) => printDateTimeFormat(row.original.startDate, "HH:mm"),
       textCenter: true,
-      headerWidth: "300px",
+      headerWidth: "200px",
     },
     {
       accessor: "endDate",
       Header: "퇴근시간",
+      headerWidth: "200px",
       Cell: ({ row }) =>
         row.original.endDate
           ? printDateTimeFormat(row.original.endDate, "HH:mm")
           : "-",
       textCenter: true,
-      headerWidth: "100px",
     },
     {
-      accessor: "",
+      accessor: "updateDate",
       Header: "수락한 날짜",
+      headerWidth: "200px",
       Cell: ({ row }) =>
         row.original.updateDate
-          ? printDateTimeFormat(row.original.updateDate, "HH:mm")
+          ? printDateTimeFormat(row.original.updateDate, "YYYY-MM-dd")
           : "-",
       textCenter: true,
     },
@@ -235,7 +239,8 @@ function SendRequest() {
       Cell: ({ row }) => {
         return (
           <>
-            {LoginData.data.rankName !== "관리자" && row.original.confirm === 0
+            {LoginData.data.rankName !== "관리자" &&
+            row.original.confirm === null
               ? "요청 중"
               : row.original.confirm === 1
               ? "수락"
@@ -250,17 +255,7 @@ function SendRequest() {
 
   return (
     <>
-      <MainTitle title={"보낸 요청 목록"}>
-        {/* <CommonBtn
-          $size="m"
-          onClick={() => AttendanceModalOpen(WORK_REQUEST_TYPE.CREATE)}
-        >
-          출퇴근 요청
-        </CommonBtn> */}
-      </MainTitle>
-
-      {/*메인 타이틀*/}
-
+      <MainTitle title={"보낸 요청 목록"}></MainTitle>
       <div style={{ display: "flex", width: "100%" }}>
         <SearchForm>
           <DatePicker setStartDate={setStartDate} setEndDate={setEndDate} />
@@ -270,14 +265,19 @@ function SendRequest() {
               style={{ width: "140px", height: "35px", textAlign: "center" }}
             >
               <option value="All">전체</option>
-              <option value="2">요청 중</option>
+              <option value="null">요청 중</option>
               <option value="1">수락</option>
-              <option value="2">거절</option>
+              <option value="0">거절</option>
             </select>
           </div>
         </SearchForm>
         <ButtonPosition>
-          <CommonBtn $size="m" $color="red" onClick={dataDelete}>
+          <CommonBtn
+            $size="m"
+            $color="red"
+            onClick={dataDelete}
+            disabled={isDeleteButtonDisabled}
+          >
             삭제
           </CommonBtn>
         </ButtonPosition>

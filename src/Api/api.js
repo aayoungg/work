@@ -280,7 +280,6 @@ export class workRequest {
     } catch (error) {
       // 오류 발생 시 처리
       console.error("오류 발생:", error);
-      // 로그인 실패 시 알림창 띄우기
       alert("출퇴근 처리 중 오류가 발생했습니다.");
       return error;
     }

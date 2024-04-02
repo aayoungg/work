@@ -176,7 +176,7 @@ function RequestCheck() {
     {
       accessor: "name",
       Header: "이름",
-      headerWidth: "150px",
+      headerWidth: "120px",
       textCenter: true,
     },
     {
@@ -184,7 +184,7 @@ function RequestCheck() {
       Header: "신청 일자",
       Cell: ({ row }) =>
         printDateTimeFormat(row.original.requestDate, "YYYY-MM-dd"),
-      headerWidth: "200px",
+      headerWidth: "120px",
       textCenter: true,
     },
     {
@@ -226,7 +226,7 @@ function RequestCheck() {
         );
       },
       textCenter: true,
-      headerWidth: "100px",
+      headerWidth: "120px",
     },
   ];
 

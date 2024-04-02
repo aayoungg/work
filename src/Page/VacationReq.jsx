@@ -13,7 +13,6 @@ import axios from "axios";
 import CommonBtn from "Component/Button/CommonBtn";
 import PageSelectBox from "Component/SelectBox/PageSelectBox";
 import Swal from "sweetalert2";
-import ModalSelect from "Component/SelectBox/ModalSelectBox";
 
 const List = styled.ul`
   display: flex;
@@ -29,6 +28,11 @@ const List = styled.ul`
     p {
       width: 100px;
       flex: 0 0 100px;
+
+      &::after {
+        content: "*";
+        color: #ff7b02;
+      }
     }
   }
 `;
@@ -212,13 +216,13 @@ const VacationReq = () => {
     {
       accessor: "name",
       Header: "이름",
-      headerWidth: "100px",
+      headerWidth: "170px",
       textCenter: true,
     },
     {
       accessor: "RequestDate",
       Header: "신청 날짜",
-      headerWidth: "150px",
+      headerWidth: "100px",
       textCenter: true,
       Cell: ({ row }) => {
         return `${row.original.requestDate}`;
@@ -227,7 +231,7 @@ const VacationReq = () => {
     {
       accessor: "VacationDate",
       Header: "휴가 날짜",
-      headerWidth: "150px",
+      headerWidth: "200px",
       textCenter: true,
       Cell: ({ row }) => {
         return `${row.original.startDate} ~ ${row.original.endDate}`;
@@ -263,7 +267,7 @@ const VacationReq = () => {
     {
       accessor: "reason",
       Header: "요청 사유",
-      headerWidth: "150px",
+      headerWidth: "140px",
       textCenter: true,
       Cell: ({ row }) => {
         return `${row.original.reason}`;
@@ -272,19 +276,20 @@ const VacationReq = () => {
     {
       accessor: "rejectionReason",
       Header: "반려 사유",
-      headerWidth: "150px",
+      headerWidth: "140px",
       textCenter: true,
       Cell: ({ row }) => {
-        return `${row.original.rejectionReason}`;
+        return row.original.rejectionReason
+          ? row.original.rejectionReason
+          : "-";
       },
     },
     {
       accessor: "",
       Header: "타입",
-      headerWidth: "150px",
+      headerWidth: "80px",
       textCenter: true,
       Cell: ({ row }) => {
-        // console.log(row.original.vacationStatus);
         return row.original.vacationStatus == 1 ? (
           "대기 중"
         ) : row.original.vacationStatus == 2 ? (
@@ -352,7 +357,8 @@ const VacationReq = () => {
             </li>
             <li>
               <p>휴가 유형</p>
-              <ModalSelect
+              <select
+                class="bo_w_select"
                 value={vacationType ? vacationType : 0}
                 onChange={(e) => setVacationType(e.target.value)}
               >
@@ -366,7 +372,7 @@ const VacationReq = () => {
                 <option value="7">생리휴가</option>
                 <option value="8">가족돌봄휴가</option>
                 <option value="9">그 외</option>
-              </ModalSelect>
+              </select>
             </li>
             <li>
               <p>사유</p>

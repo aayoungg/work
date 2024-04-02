@@ -266,7 +266,8 @@ const Part = () => {
               {isEditing && (
                 <li>
                   <p>사용여부</p>
-                  <ModalSelect
+                  <select
+                    class="bo_w_select"
                     value={flag}
                     onChange={(e) => {
                       setFlag(e.target.value);
@@ -278,7 +279,7 @@ const Part = () => {
                     <option key={0} value={0}>
                       사용 안 함
                     </option>
-                  </ModalSelect>
+                  </select>
                 </li>
               )}
             </List>
@@ -288,6 +289,7 @@ const Part = () => {
                 $full
                 $size="l"
                 onClick={isEditing ? handleUpdatePart : handleSavePart}
+                disabled={!name}
               >
                 {isEditing ? "수정" : "생성"}
               </CommonBtn>

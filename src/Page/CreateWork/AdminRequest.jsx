@@ -1,3 +1,4 @@
+// 관리자 : 근태관리-근무 일정 시 근무 일정 추가 및 수정 모달창
 /* eslint-disable */
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -6,14 +7,14 @@ import { workTimeUnit } from "../../Api/api";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { TimePicker } from "antd";
-import { toast } from "react-toastify";
 import MainTitle from "Component/Header/MainTitle";
 import CommonBtn from "Component/Button/CommonBtn";
 import ReactTable from "Component/Table/ReactTable";
 import Pagination from "Component/Pagination/Pagination";
 import PageSelectBox from "Component/SelectBox/PageSelectBox";
 import Modal from "react-modal";
-import ModalSelect from "Component/SelectBox/ModalSelectBox";
+import { toast } from "react-toastify";
+import MemoCell from "Component/MemoToggle/MemoCell";
 
 const Btn = styled.div`
   padding: 4px;
@@ -50,11 +51,22 @@ function AdminRequest() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [checkBoxIdx, setCheckBoxIdx] = useState({});
   const [data, setData] = useState();
-  // 시간
+  const [text, setText] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+
+  // 근무일정 추가할 때의 출/퇴근 시간
+  const [startTimeAChange, setStartTimeAChange] = useState("");
+  const [endTimeAChangee, setEndTimeAChange] = useState("");
+
+  //근무일정을 수정할 때의 출/퇴근 시간
+  const [startTimeSChange, setStartTimeSChange] = useState("");
+  const [endTimeSChange, setEndTimeSChange] = useState("");
+
+  // 근무 일정 수정할 때의 변경된 출/퇴근 시간
   const [startTimeChange, setStartTimeChange] = useState("");
   const [endTimeChange, setEndTimeChange] = useState("");
+
   dayjs.extend(customParseFormat);
   const format = "HH:mm";
   // 버튼 갯수
@@ -66,8 +78,8 @@ function AdminRequest() {
   const [inputs, setInputs] = useState({
     timename: "",
     memo: "",
-    changeName: "",
-    changeMemo: "",
+    changeName: null,
+    changeMemo: null,
   });
 
   const { timename, memo, changeName, changeMemo } = inputs;
@@ -89,29 +101,47 @@ function AdminRequest() {
   };
 
   const toggleModal = (content, data) => {
-    console.log("data", data);
-
     setModalContent(content);
     if (data != undefined) {
       setData(data);
+      setInputs({
+        timename: data.original.timename,
+        memo: data.original.memo,
+        changeName: data.original.name,
+        changeMemo: data.original.memo,
+      });
+      setStartTimeSChange(dayjs(data.original.startTime, format));
+      setEndTimeSChange(dayjs(data.original.endTime, format));
+      setStartTimeChange(dayjs(data.original.startTime, format));
+      setEndTimeChange(dayjs(data.original.endTime, format));
       setValue(data.original.idx);
     }
     setIsModalOpen(!isModalOpen);
+
+    if (content === "default") {
+      setModalHeader("근무일정 추가");
+    } else if (content === "custom") {
+      setModalHeader("근무일정 수정");
+    }
   };
 
   // 시간 수정
   const onChange = (value, name) => {
     const time = value != null ? value.format(format) : "00:00";
     if (name === "startTime") {
-      setStartTime(time);
+      setStartTime(value);
+      setStartTimeAChange(time);
     } else if (name === "endTime") {
-      setEndTime(time);
+      setEndTime(value);
+      setEndTimeAChange(time);
     }
 
     if (name === "startTimeChange") {
-      setStartTimeChange(time);
+      setStartTimeChange(value);
+      setStartTimeSChange(time);
     } else if (name === "endTimeChange") {
-      setEndTimeChange(time);
+      setEndTimeChange(value);
+      setEndTimeSChange(time);
     }
   };
 
@@ -125,33 +155,79 @@ function AdminRequest() {
 
   const TimeDataAdd = async () => {
     new workTimeUnit()
-      .post(timename, startTime, endTime, memo)
+      .post(timename, startTimeAChange, endTimeAChangee, memo)
       .then((TimeDataAdd) => {
         if (TimeDataAdd.code === 200) {
           getWorkTimeUnit();
-          alert("업무시간이 추가 되었습니다.");
+          alert("근무시간이 추가 되었습니다.");
+          setInputs("");
           setIsModalOpen(!isModalOpen);
+        } else if (TimeDataAdd.code === 400) {
+          alert("동일한 근무 시간 정보가 있습니다.");
         } else {
-          alert("업무시간 추가 중에 문제가 발생했습니다.");
+          alert("근무시간 추가 중에 문제가 발생했습니다.");
         }
       });
   };
+
+  // const TimeDataAdd = async () => {
+  //   // 중복 체크를 위한 변수
+  //   let isDuplicate = false;
+
+  //   const newName = timename ? timename.trim() : "";
+
+  //   // 기존 목록의 이름과 비교하여 중복 체크
+  //   timeDataCopy.forEach((item) => {
+  //     const existingName = item.timename ? item.timename.trim() : "";
+  //     if (newName === existingName) {
+  //       isDuplicate = true;
+  //     }
+  //   });
+
+  //   // 중복이면
+  //   if (isDuplicate) {
+  //     alert("이미 같은 이름의 근무 일정이 존재합니다.");
+  //     return;
+  //   }
+
+  //   // 중복이 아니면 업무시간 추가 진행
+  //   new workTimeUnit()
+  //     .post(timename, startTimeAChange, endTimeAChangee, memo)
+  //     .then((TimeDataAdd) => {
+  //       if (TimeDataAdd.code === 200) {
+  //         getWorkTimeUnit();
+  //         alert("업무시간이 추가 되었습니다.");
+  //         setInputs("");
+  //         setIsModalOpen(!isModalOpen);
+  //       } else {
+  //         alert("업무시간 추가 중에 문제가 발생했습니다.");
+  //       }
+  //     });
+  // };
 
   useEffect(() => {
     getWorkTimeUnit();
   }, []);
 
-  function IdxCheck(e) {
-    const selectedIdx = e.target.value;
-    setValue(
-      timeDataCopy.find((TimeCheck) => selectedIdx === TimeCheck.idx.toString())
-    );
-  }
-
   const TimeDateChange = async () => {
+    if (!changeName || !startTimeSChange || !endTimeSChange) {
+      toast.error("템플릿명, 근무시간을 입력해주세요.");
+      return;
+    }
+
     const idx = value;
     new workTimeUnit()
-      .put(idx, changeName, startTimeChange, endTimeChange, changeMemo)
+      .put(
+        idx,
+        changeName,
+        typeof startTimeSChange == "string"
+          ? startTimeSChange
+          : startTimeSChange.format(format),
+        typeof endTimeSChange == "string"
+          ? endTimeSChange
+          : endTimeSChange.format(format),
+        changeMemo
+      )
       .then((TimeChange) => {
         if (TimeChange != undefined) {
           if (TimeChange.code === 200) {
@@ -199,8 +275,16 @@ function AdminRequest() {
     setEndTime("");
     setValue(undefined);
   };
-
-  // 다른 모달 나오게 하는 코드
+  const reset = () => {
+    setInputs({
+      timename: "",
+      memo: "",
+    });
+    setStartTime("");
+    setEndTime("");
+  };
+  // const toggleMemo = memo.length > 5 ? `${memo.slice(0, 5)}...` : memo;
+  // default : 업무시간 추가 모달창, custom : 수정 모달창
   const renderModalContent = () => {
     switch (modalContent) {
       case "default":
@@ -212,27 +296,38 @@ function AdminRequest() {
                 name="timename"
                 type="text"
                 onChange={handleChange}
-                placeholder={"업무시간 이름"}
+                placeholder={"템플릿명"}
               />
 
               <TimePicker
                 name="startTime"
+                value={startTime}
                 placeholder={value == undefined ? "출근시간" : startTime}
-                onChange={(value) => onChange(value, "startTime")}
-                defaultOpenValue={dayjs("00:00", format)}
                 format={format}
-                changeOnScroll
-                needConfirm={false}
+                onCalendarChange={(value) => onChange(value, "startTime")}
               />
               <TimePicker
                 name="endTime"
+                value={endTime}
                 placeholder={value == undefined ? "퇴근시간" : endTime}
-                onChange={(value) => onChange(value, "endTime")}
-                defaultOpenValue={dayjs("00:00", format)}
+                onCalendarChange={(value) => onChange(value, "endTime")}
                 format={format}
-                changeOnScroll
-                needConfirm={false}
               />
+              <input
+                value={text}
+                name="workTime"
+                type="text"
+                placeholder={`근무: ${
+                  endTime
+                    ? `${new Date(
+                        endTime - startTime - 1
+                      ).getUTCHours()}h ${new Date(
+                        endTime - startTime
+                      ).getUTCMinutes()}m, 휴게: 1h`
+                    : "-"
+                }`}
+                disabled={"default"}
+              ></input>
               <input
                 value={memo}
                 name="memo"
@@ -242,12 +337,21 @@ function AdminRequest() {
               />
 
               <div className="modal_btn">
-                <CommonBtn
-                  $size="m"
-                  onClick={() => toggleModal("default", null)}
-                >
-                  업무시간 추가
-                </CommonBtn>
+                <ButtonPosition>
+                  {/* <Btn> */}
+                  <button className="modal_restart" onClick={reset} />
+                  {/* </Btn>
+                  <Btn> */}
+                  <CommonBtn
+                    $full
+                    $size="l"
+                    onClick={TimeDataAdd}
+                    disabled={!timename || !startTime || !endTime || !memo}
+                  >
+                    근무 일정 추가
+                  </CommonBtn>
+                  {/* </Btn> */}
+                </ButtonPosition>
               </div>
             </List>
           </div>
@@ -257,37 +361,44 @@ function AdminRequest() {
           <>
             <List>
               <input
-                value={
-                  changeName == "" || changeName == undefined
-                    ? data.original.name
-                    : changeName
-                }
+                value={changeName == null ? data.original.name : changeName}
                 name="changeName"
                 type="text"
                 onChange={handleChange}
                 placeholder={value === undefined ? "업무시간 이름" : value.name}
               />
               <TimePicker
-                style={{ width: "" }}
                 name="startTimeChange"
                 placeholder={data.original.startTime}
-                onChange={(value) => onChange(value, "startTimeChange")}
-                defaultOpenValue={dayjs("00:00", format)}
+                value={dayjs(startTimeSChange, format)}
                 format={format}
+                onCalendarChange={(value) => onChange(value, "startTimeChange")}
               />
               <TimePicker
                 name="endTimeChange"
                 placeholder={data.original.endTime}
                 onChange={(value) => onChange(value, "endTimeChange")}
-                defaultOpenValue={dayjs("00:00", format)}
+                value={dayjs(endTimeSChange, format)}
                 format={format}
+                onCalendarChange={(value) => onChange(value, "startTimeChange")}
               />
               <input
-                value={
-                  changeMemo == "" || changeMemo == undefined
-                    ? data.original.memo
-                    : changeMemo
-                }
+                value={text}
+                name="workTime"
+                type="text"
+                placeholder={`근무: ${
+                  data.original.endTime
+                    ? `${new Date(
+                        endTimeChange - startTimeChange
+                      ).getUTCHours()}h ${new Date(
+                        endTimeChange - startTimeChange
+                      ).getUTCMinutes()}m`
+                    : "-"
+                }`}
+                disabled={"custom"}
+              ></input>
+              <input
+                value={changeMemo == null ? data.original.memo : changeMemo}
                 name="changeMemo"
                 type="text"
                 onChange={handleChange}
@@ -299,7 +410,7 @@ function AdminRequest() {
                   $size="l"
                   onClick={TimeDateChange}
                 >
-                  근무시간 변경하기
+                  근무 일정 변경하기
                 </CommonBtn>
               </div>
             </List>
@@ -369,6 +480,7 @@ function AdminRequest() {
       accessor: "termDate",
       Header: "메모",
       Cell: ({ row }) => (row.original.memo ? row.original.memo : "-"),
+      // Cell: MemoCell,
       textCenter: true,
       headerWidth: "350px",
     },
@@ -392,11 +504,11 @@ function AdminRequest() {
 
   return (
     <>
-      <MainTitle title={"직원 업무시간 목록"}>
+      <MainTitle title={"근무 일정"}>
         <ButtonPosition>
           <Btn>
             <CommonBtn $size="m" onClick={() => toggleModal("default")}>
-              업무시간 추가
+              근무 일정 추가
             </CommonBtn>
           </Btn>
           <Btn>
@@ -418,7 +530,7 @@ function AdminRequest() {
           shouldCloseOnOverlayClick={false}
         >
           <div className="modal_header">
-            {modalHeader}
+            <div className="modal_title">{modalHeader}</div>
             <div className="modal_close" onClick={closeModal}></div>
           </div>
           <div className="modal_content">{renderModalContent()}</div>

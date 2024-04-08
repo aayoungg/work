@@ -103,7 +103,7 @@ function SendRequest() {
         if (confirmdata.data.code === 200) {
           if (confirm !== null) {
             WorkRequest();
-            alert("처리 되셨습니다.");
+            toast.success("처리 되었습니다.");
             setIsModalOpen(!isModalOpen);
           }
         }
@@ -282,8 +282,9 @@ function SendRequest() {
           </CommonBtn>
         </ButtonPosition>
       </div>
-      <ReactTable columns={columns} data={currentItems} />
-
+      <div className="scroll-table" style={{ height: "calc(100vh - 380px)" }}>
+        <ReactTable columns={columns} data={currentItems} />
+      </div>
       <PageSelectBox onChange={handleItemsPerPageChange}>
         <option value="10">10</option>
         <option value="15">15</option>

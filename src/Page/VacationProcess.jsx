@@ -92,10 +92,14 @@ function VacationProcess() {
       : value && value.slice(indexOfFirstItem, indexOfLastItem); // 현재 페이지
 
   const handleApprove = async (row) => {
+    console.log(row);
     const approveIdx = loginData.data.rankName == "팀장" ? 2 : 1;
     const { idx, action } = row.original;
     Swal.fire({
       title: "승인되었습니다.",
+      //     html: `
+      //   <p>${row.original.reason}</p>
+      // `,
       icon: "success",
       showCancelButton: false,
       confirmButtonColor: "#3085d6",
@@ -282,8 +286,9 @@ function VacationProcess() {
           <option value="3">반려</option>
         </select>
       </SearchForm>
-
-      <ReactTable columns={columns} data={currentItems} />
+      <div className="scroll-table" style={{ height: "calc(100vh - 380px)" }}>
+        <ReactTable columns={columns} data={currentItems} />
+      </div>
       <PageSelectBox onChange={handleItemsPerPageChange}>
         <option value="10">10</option>
         <option value="15">15</option>

@@ -45,9 +45,8 @@ export default function CreateAttendanceModal({
   const navigate = useNavigate();
   const LoginDate = getCookie("logindata");
   const userIdx = LoginDate.data.idx;
-
-  const [startHour, setStartHour] = useState("");
-  const [endHour, setEndHour] = useState("");
+  const [modalStartDate, setModalStartDate] = useState(null);
+  const [modalEndDate, setModalEndDate] = useState(null);
   const [inputs, setInputs] = useState({
     startHour: "",
     startMinute: "",
@@ -58,11 +57,15 @@ export default function CreateAttendanceModal({
 
   // 출퇴근 정보가 이미 존재하는 경우에는 수정 요청을 보낼 수 있도록 버튼을 활성화하고, 정보가 없는 경우에는 요청을 보낼 수 있도록 버튼을 비활성화
   const [isAlready, setIsAlready] = useState(false);
-
-  const { type } = inputs;
-
   // time
   const [responseData, setResponseData] = useState();
+  const { type } = inputs;
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsAlready(false);
+    setStartDate("");
+  };
+
   dayjs.extend(customParseFormat);
   const format = "HH:mm";
 
@@ -71,9 +74,15 @@ export default function CreateAttendanceModal({
     const timeString =
       value == null ? "" : value.format(format).split(":").join("");
     if (name === "start") {
-      setStartHour(timeString);
+      setInputs({
+        ...inputs,
+        startHour: timeString,
+      });
     } else if (name === "end") {
-      setEndHour(timeString);
+      setInputs({
+        ...inputs,
+        endHour: timeString,
+      });
     }
   };
 
@@ -87,13 +96,30 @@ export default function CreateAttendanceModal({
       timeInjection(attendanceTime.startDate, attendanceTime.endDate || null);
     }
   }, [isModalOpen]);
+
   useEffect(() => {
     if (!isModalOpen) return;
-
+    console.log(startDate);
     if (modalType === WORK_REQUEST_TYPE.CREATE) {
+      console.log(modalType);
       sendWorkCheck();
     }
   }, [startDate]);
+
+  useEffect(() => {
+    console.log(responseData);
+    setModalStartDate(
+      responseData == undefined || responseData.code == 404
+        ? null
+        : responseData.data[0].startDate.split("T")[1].slice(0, 5)
+    );
+
+    setModalEndDate(
+      responseData == undefined || responseData.code == 404
+        ? null
+        : responseData.data[0].endDate?.split("T")[1].slice(0, 5)
+    );
+  }, [responseData, startDate]);
 
   const sendWorkCheck = () => {
     new workcheck()
@@ -113,20 +139,6 @@ export default function CreateAttendanceModal({
         console.error("Error during workcheck:", err);
       });
   };
-  function formatDate(date) {
-    // 날짜 객체 생성
-    var d = new Date(date);
-
-    // 원하는 형식으로 날짜 및 시간 값 추출
-    var year = d.getFullYear();
-    var month = ("0" + (d.getMonth() + 1)).slice(-2);
-    var day = ("0" + d.getDate()).slice(-2);
-    var hours = ("0" + d.getHours()).slice(-2);
-    var minutes = ("0" + d.getMinutes()).slice(-2);
-
-    // yyyyMMddHHmm 형식으로 조합하여 반환
-    return year + month + day + hours + minutes;
-  }
 
   const timeInjection = (start, end) => {
     setInputs({
@@ -136,10 +148,8 @@ export default function CreateAttendanceModal({
     });
   };
 
-  //유효성 검사
-  console.log("");
   const validForm = () => {
-    if (startHour == "" || endHour == "") {
+    if (inputs.startHour === "" || inputs.endHour === "") {
       toast("시간을 입력해주세요");
       return false;
     }
@@ -148,16 +158,14 @@ export default function CreateAttendanceModal({
   };
 
   const FormattedTime = () => {
+    console.log(startDate);
+    console.log(responseData);
+
     const formattedStartTime =
-      startHour === ""
-        ? dayjs(startDate).format("YYYYMMDD") +
-          attendanceTime.startDate.split("T")[1].split(":").slice(0, 2).join("")
-        : dayjs(startDate).format("YYYYMMDD") + startHour;
+      dayjs(startDate).format("YYYYMMDD") + inputs.startHour;
+
     const formattedEndTime =
-      endHour === ""
-        ? dayjs(startDate).format("YYYYMMDD") +
-          attendanceTime.endDate.split("T")[1].split(":").slice(0, 2).join("")
-        : dayjs(startDate).format("YYYYMMDD") + endHour;
+      dayjs(startDate).format("YYYYMMDD") + inputs.endHour;
 
     return { formattedStartTime, formattedEndTime };
   };
@@ -170,7 +178,9 @@ export default function CreateAttendanceModal({
     const { formattedStartTime, formattedEndTime } = FormattedTime();
 
     if (isAlready) {
-      toast.error("이미 출퇴근 요청을 보냈습니다.");
+      toast.error(
+        "이미 출퇴근을 하였거나 요청 중 입니다. 보낸 요청 목록 페이지로 가서 수정 요청을 보내주세요."
+      );
       return;
     }
 
@@ -185,7 +195,12 @@ export default function CreateAttendanceModal({
       .then((res) => {
         if (res.code === 200) {
           toast.success("출퇴근 요청을 보냈습니다.");
+          setIsModalOpen(false);
           navigate("/work/SendRequest");
+        } else if (res.code === 400) {
+          toast.error("이미 해당 기간에 출퇴근 요청이 있습니다.");
+        } else {
+          toast.error("출퇴근 조회가 없습니다.");
         }
       })
       .catch((err) => {
@@ -219,6 +234,10 @@ export default function CreateAttendanceModal({
           setIsModalOpen(false);
           navigate("/work/SendRequest");
           toast.success("출퇴근 수정 요청을 보냈습니다.");
+        } else if (res.code === 400) {
+          toast.error(
+            "이미 해당 기간에 출퇴근 수정 요청이 있습니다. 취소 후 재수정 요청을 해주세요."
+          );
         }
       })
       .catch((err) => {
@@ -226,34 +245,22 @@ export default function CreateAttendanceModal({
         console.error("Error during workRequest:", err);
       });
   };
+  function formatDate(dateString) {
+    // 날짜 객체 생성
+    var d = new Date(dateString);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setIsAlready(false);
-    setStartDate("");
-  };
+    // 원하는 형식으로 날짜 및 시간 값 추출
+    var year = d.getFullYear();
+    var month = ("0" + (d.getMonth() + 1)).slice(-2);
+    var day = ("0" + d.getDate()).slice(-2);
+    var hours = ("0" + d.getHours()).slice(-2);
+    var minutes = ("0" + d.getMinutes()).slice(-2);
 
-  useEffect(() => {
-    console.log(responseData);
-    setModalStartDate(
-      responseData == undefined || responseData.code == 404
-        ? null
-        : responseData.data[0].startDate.split("T")[1].slice(0, 5)
-    );
-    setModalEndDate(
-      responseData == undefined || responseData.code == 404
-        ? null
-        : responseData.data[0].endDate?.split("T")[1].slice(0, 5)
-    );
-  }, [responseData, startDate]);
-
-  const [modalStartDate, setModalStartDate] = useState(null);
-  const [modalEndDate, setModalEndDate] = useState(null);
-  console.log(
-    responseData == undefined || responseData.code == 404
-      ? "출근시간"
-      : responseData.data[0].startDate.split("T")[1].slice(0, 5)
-  );
+    // yyyyMMddHHmm 형식으로 조합하여 반환
+    return year + month + day + hours + minutes;
+  }
+  console.log(startDate);
+  console.log(modalStartDate);
   return (
     <>
       <Modal isOpen={isModalOpen}>
@@ -319,11 +326,11 @@ export default function CreateAttendanceModal({
                 value={
                   modalEndDate == null ? null : dayjs(modalEndDate, format)
                 }
-                format={format}
                 onCalendarChange={(value) => {
                   onChange(value, "end");
                   setModalEndDate(value);
                 }}
+                format={format}
               />
             </li>
           </List>

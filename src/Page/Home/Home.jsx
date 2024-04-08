@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import Attendance from "../../Component/My/Attendance";
 
 const HomeWrap = styled.div`
-  width: 30%;
+  width: 252px;
 `;
 const CalenderPosition = styled.div`
   width: 60vw;
@@ -16,6 +16,7 @@ const CalenderPosition = styled.div`
   padding: 23px;
 `;
 
+// 출근하기 퇴근하기 버튼 배경
 const Card = styled.div`
   width: 100%;
   background: #fff;

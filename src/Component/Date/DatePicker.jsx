@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import ReactDatePicker from "react-datepicker";
 import "./DatePicker.css";
 import { printDateTimeFormat } from "helper/value";
-
+import { ko } from "date-fns/locale";
 const DatePicker = ({ date, setDate, ...props }) => {
   const [checkDate, setCheckDate] = useState(new Date());
 
@@ -28,6 +28,7 @@ const DatePicker = ({ date, setDate, ...props }) => {
       onChange={(date) => setChangeDate(date)}
       portalId="root-portal"
       {...props}
+      locale={ko}
     />
   );
 };

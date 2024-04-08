@@ -14,6 +14,7 @@ import MainTitle from "Component/Header/MainTitle";
 import Swal from "sweetalert2";
 import ModalSelect from "Component/SelectBox/ModalSelectBox";
 import TextArea from "Component/SelectBox/TextArea";
+import { calc } from "antd/es/theme/internal";
 
 const Ul = styled.ul`
   padding: 0;
@@ -625,7 +626,9 @@ const Account = () => {
           </div>
         </Modal>
       </Ul>
-      <ReactTable columns={columns} data={currentItems} />
+      <div className="scroll-table" style={{ height: "calc(100vh - 380px)" }}>
+        <ReactTable columns={columns} data={currentItems} />
+      </div>
       <PageSelectBox onChange={handleItemsPerPageChange}>
         <option value="10">10</option>
         <option value="15">15</option>

@@ -14,6 +14,7 @@ import SearchForm from "Component/Layout/SearchForm.jsx";
 import PageSelectBox from "Component/SelectBox/PageSelectBox.jsx";
 import CommonBtn from "Component/Button/CommonBtn.jsx";
 import Modal from "react-modal";
+import { toast } from "react-toastify";
 
 const DataBox = styled.div`
   border: 1px solid var(--gray4);
@@ -148,7 +149,7 @@ function RequestCheck() {
       new workRequest().put(idx, userIdx, confirm).then((confirmdata) => {
         if (confirmdata.data.code === 200) {
           if (confirm !== null) {
-            alert("처리 되셨습니다.");
+            toast.success("처리 되었습니다.");
             setIsModalOpen(!isModalOpen);
           }
         }
@@ -380,8 +381,9 @@ function RequestCheck() {
           </div>
         </Modal>
       )}
-
-      <ReactTable columns={columns} data={currentItems} />
+      <div className="scroll-table" style={{ height: "calc(100vh - 380px)" }}>
+        <ReactTable columns={columns} data={currentItems} />
+      </div>
       <PageSelectBox onChange={handleItemsPerPageChange}>
         <option value="10">10</option>
         <option value="15">15</option>

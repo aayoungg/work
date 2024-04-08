@@ -36,6 +36,15 @@ const colors = {
     background-color: red;
     color: white;
   `,
+  "red-line": css`
+    background-color: white;
+    color: red;
+    border-color: red;
+
+    &:hover {
+      background-color: #fde0e0;
+    }
+  `,
   blue: css`
     background-color: var(--main-color);
     color: white;
@@ -60,6 +69,15 @@ const colors = {
 
     &:hover {
       background-color: var(--gray2);
+    }
+  `,
+
+  navy: css`
+    background-color: #202a43;
+    color: white;
+
+    &:hover {
+      background-color: #1b2336;
     }
   `,
 };

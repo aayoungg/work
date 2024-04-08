@@ -44,7 +44,7 @@ export default function ReactTable({ columns, data }) {
     useTable({ columns, data });
 
   return (
-    <div>
+    <div className="table-wrap">
       <Table {...getTableProps()}>
         <thead>
           {headerGroups.map((header) => (

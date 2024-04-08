@@ -36,7 +36,6 @@ const List = styled.ul`
     }
   }
 `;
-
 const VacationReq = () => {
   const [vacations, setVacations] = useState([]);
   const [userIdx, setUserIdx] = useState("");
@@ -60,15 +59,15 @@ const VacationReq = () => {
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-  const handleItemsPerPageChange = (e) => {
-    const newItemsPerPage = parseInt(e.target.value);
-    // 현재 페이지가 맨 마지막 페이지보다 큰 경우
-    if (currentPage > Math.ceil(totalItems / newItemsPerPage)) {
-      //   // 현재 페이지를 맨 마지막 페이지로 설정
-      setCurrentPage(Math.ceil(totalItems / newItemsPerPage));
-    }
-    setItemsPerPage(newItemsPerPage); // select box에서 선택한 값으로 itemsPerPage 목록 업데이트
-  };
+
+  const totalItems =
+    value == undefined ? vacation && vacation.length : value && value.length; // 전체
+  const indexOfLastItem = currentPage * itemsPerPage; // 현재 페이지에서 마지막
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage; // 현재 페이지에서 첫번째
+  const currentItems =
+    value == undefined
+      ? vacation && vacation.slice(indexOfFirstItem, indexOfLastItem)
+      : value && value.slice(indexOfFirstItem, indexOfLastItem); // 현재 페이지
   useEffect(() => {
     //logindata 쿠키 가져옴
     if (loginData) {
@@ -197,16 +196,15 @@ const VacationReq = () => {
       }
     }
   };
-
-  const totalItems =
-    value == undefined ? vacation && vacation.length : value && value.length; // 전체
-  const indexOfLastItem = currentPage * itemsPerPage; // 현재 페이지에서 마지막
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage; // 현재 페이지에서 첫번째
-  const currentItems =
-    value == undefined
-      ? vacation && vacation.slice(indexOfFirstItem, indexOfLastItem)
-      : value && value.slice(indexOfFirstItem, indexOfLastItem); // 현재 페이지
-
+  const handleItemsPerPageChange = (e) => {
+    const newItemsPerPage = parseInt(e.target.value);
+    // 현재 페이지가 맨 마지막 페이지보다 큰 경우
+    if (currentPage > Math.ceil(totalItems / newItemsPerPage)) {
+      //   // 현재 페이지를 맨 마지막 페이지로 설정
+      setCurrentPage(Math.ceil(totalItems / newItemsPerPage));
+    }
+    setItemsPerPage(newItemsPerPage); // select box에서 선택한 값으로 itemsPerPage 목록 업데이트
+  };
   useEffect(() => {
     vacationRequest();
     filter(selectFilter);
@@ -413,8 +411,9 @@ const VacationReq = () => {
         </select>
       </SearchForm>
 
-      <ReactTable columns={columns} data={currentItems} />
-
+      <div className="scroll-table" style={{ height: "calc(100vh - 380px)" }}>
+        <ReactTable columns={columns} data={currentItems} />
+      </div>
       <PageSelectBox onChange={handleItemsPerPageChange}>
         <option value="10">10</option>
         <option value="15">15</option>

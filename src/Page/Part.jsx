@@ -297,7 +297,9 @@ const Part = () => {
           </div>
         </Modal>
       </Ul>
-      <ReactTable columns={columns} data={currentItems} />
+      <div className="scroll-table" style={{ height: "calc(100vh - 380px)" }}>
+        <ReactTable columns={columns} data={currentItems} />
+      </div>
       <PageSelectBox onChange={handleItemsPerPageChange}>
         <option value="10">10</option>
         <option value="15">15</option>

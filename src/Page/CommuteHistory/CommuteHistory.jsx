@@ -14,7 +14,8 @@ import CommonBtn from "../../Component/Button/CommonBtn";
 import CreateAttendanceModal from "../../Component/Modal/CreateAttendanceModal";
 import { WORK_REQUEST_TYPE } from "../../constants/serviceConstants";
 import PageSelectBox from "Component/SelectBox/PageSelectBox";
-
+// console 창 warning 처리
+console.warn = console.error = () => {};
 function CommuteHistory() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -214,7 +215,9 @@ function CommuteHistory() {
       </SearchForm>
 
       {/*테이블*/}
-      <ReactTable columns={columns} data={currentItems} />
+      <div className="scroll-table" style={{ height: "calc(100vh - 380px)" }}>
+        <ReactTable columns={columns} data={currentItems} />
+      </div>
       <PageSelectBox onChange={handleItemsPerPageChange}>
         <option value="10">10</option>
         <option value="15">15</option>

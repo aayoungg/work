@@ -144,7 +144,7 @@ input[type="checkbox"]:checked + label {
 .Toastify .Toastify__toast-container {
   z-index: 600;
   width: fit-content !important;
-  max-width: 500px;
+  max-width: 1000px;
   min-width: 300px;
 }
 
@@ -284,4 +284,37 @@ input[type="checkbox"]:checked + label {
     outline: none;
     border-color: #000;
   }
+}
+
+.line {
+  position: absolute;
+  width: 250px;
+  left: 327px;
+  margin-top: 161px;
+  border-top: 1px solid #efefef;
+}
+
+.v-line {
+  border-left: 3px solid #0059ff;
+  height: 42px;
+  left: 320px;
+  top: 186px;
+  position: absolute;
+}
+
+/* .home-calendar {
+  background: url("assets/icon/social/home-calendar.svg") no-repeat;
+} */
+
+.scroll-table {
+  overflow: auto;
+  position: relative;
+  /* height: calc(100vh - 380px); */
+}
+
+.scroll-table .table-wrap thead {
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: #fff;
 }

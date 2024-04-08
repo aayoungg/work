@@ -14,7 +14,6 @@ import Pagination from "Component/Pagination/Pagination";
 import PageSelectBox from "Component/SelectBox/PageSelectBox";
 import Modal from "react-modal";
 import { toast } from "react-toastify";
-import MemoCell from "Component/MemoToggle/MemoCell";
 
 const Btn = styled.div`
   padding: 4px;
@@ -365,11 +364,11 @@ function AdminRequest() {
                 name="changeName"
                 type="text"
                 onChange={handleChange}
-                placeholder={value === undefined ? "업무시간 이름" : value.name}
+                // placeholder={value === undefined ? "업무시간 이름" : value.name}
               />
               <TimePicker
                 name="startTimeChange"
-                placeholder={data.original.startTime}
+                // placeholder={data.original.startTime}
                 value={dayjs(startTimeSChange, format)}
                 format={format}
                 onCalendarChange={(value) => onChange(value, "startTimeChange")}
@@ -377,10 +376,9 @@ function AdminRequest() {
               <TimePicker
                 name="endTimeChange"
                 placeholder={data.original.endTime}
-                onChange={(value) => onChange(value, "endTimeChange")}
-                value={dayjs(endTimeSChange, format)}
+                value={endTimeChange}
                 format={format}
-                onCalendarChange={(value) => onChange(value, "startTimeChange")}
+                onCalendarChange={(value) => onChange(value, "endTimeChange")}
               />
               <input
                 value={text}
@@ -480,7 +478,6 @@ function AdminRequest() {
       accessor: "termDate",
       Header: "메모",
       Cell: ({ row }) => (row.original.memo ? row.original.memo : "-"),
-      // Cell: MemoCell,
       textCenter: true,
       headerWidth: "350px",
     },
@@ -536,8 +533,9 @@ function AdminRequest() {
           <div className="modal_content">{renderModalContent()}</div>
         </Modal>
       )}
-      <ReactTable columns={columns} data={currentItems} />
-
+      <div className=".scroll-table" style={{ height: "calc(100vh - 380px)" }}>
+        <ReactTable columns={columns} data={currentItems} />
+      </div>
       <PageSelectBox onChange={handleItemsPerPageChange}>
         <option value="10">10</option>
         <option value="15">15</option>
